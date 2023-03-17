@@ -39,28 +39,35 @@ public class PlcController:ControllerBase
     [HttpPost]
     public ActionResult Stop()
     {
-        S7Client.Write("DB4.DBX4.0", false); // 停止运行    
+        S7Client.Write("DB4.DBX4.0", false); // 停止运行
         return Ok();
     }
 
+    static private readonly Random r = new Random();
     [HttpGet]
     public PlcState Get()
     {
-        bool I30 = S7Client.ReadBool("I3.0").Content;
-        float x = S7Client.ReadFloat("MD504").Content;
-        float z = S7Client.ReadFloat("MD516").Content;
-        return new PlcState(x, z);
+        PlcState state = new PlcState();
+        state.stopped = S7Client.ReadBool("DB4.DBX6.0").Content;
+        state.x = S7Client.ReadFloat("MD504").Content;
+        state.z = S7Client.ReadFloat("MD516").Content;
+        state.weights = new float[4]
+        {
+            S7Client.ReadFloat("DB4.DBD48").Content,
+            S7Client.ReadFloat("DB4.DBD52").Content,
+            S7Client.ReadFloat("DB4.DBD56").Content,
+            S7Client.ReadFloat("DB4.DBD60").Content
+        };
+        return state;
     }
 }
+
 public class PlcState
 {
+    public bool stopped { get; set; }
     public float x { get; set; }
     public float z { get; set; }
-    public PlcState(float x, float z)
-    {
-        this.x = x;
-        this.z = z;
-    }
+    public float[] weights { get; set; }
 }
 
 public class StartParameter

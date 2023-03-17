@@ -6,17 +6,8 @@ export default defineConfig({
   plugins: [vue()],
   server:{
     proxy:{
-      '/api/hub':{
-        target:'http://localhost:5069',
-        changeOrigin:true,
-        ws:true,
-      },
-      '/WeatherForecast':{
-        target:'http://localhost:5069',
-        changeOrigin:true,
-      },
       '/api/Plc':{
-        target:'http://localhost:5069',
+        target:'http://localhost:5121',
         changeOrigin:true,
         secure:false,
       }

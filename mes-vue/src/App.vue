@@ -23,6 +23,9 @@
       <div>
         <label>Y坐标</label><span>{{ z }}</span>
       </div>
+      <div v-for="(w,i) of weights">
+        <label>重量{{i+1}}</label><span>{{w}}</span>
+      </div>
     </div>
   </main>
 
@@ -38,7 +41,7 @@ html, body, #app {
 }
 main{
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   width: 100%;
 }
 form.plc {
@@ -70,7 +73,6 @@ div input {
 
 <script setup lang="ts">
 import {ref} from "vue";
-import {HubConnection, HubConnectionBuilder} from '@microsoft/signalr'
 
 let a = ref(0.0);
 let b = ref(0.0);
@@ -78,8 +80,7 @@ let c = ref(0.0);
 let d = ref(0.0);
 let x = ref(0.0);
 let z = ref(0.0);
-let weather = ref('0');
-const connection = new HubConnectionBuilder().withUrl('/api/plc').build();
+let weights = ref([0,0,0,0]);
 
 let timer: number | null = null;
 
@@ -91,9 +92,17 @@ async function plc_start() {
           body: JSON.stringify({a: 0, b: 0, c: 0, d: 0})
         });
     timer = setInterval(async () => {
-      let plc_state: { x: number, z: number } = await (await fetch('/api/Plc')).json();
+      let plc_state: { stopped: boolean, x: number, z: number, weights:Array<number> }
+          = await (await fetch('/api/Plc')).json();
+      if(plc_state.stopped){
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
       x.value = plc_state.x;
       z.value = plc_state.z;
+      weights.value=plc_state.weights;
     }, 1000);
   }
 }
