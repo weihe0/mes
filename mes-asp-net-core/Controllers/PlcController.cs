@@ -12,11 +12,25 @@ public class PlcController:ControllerBase
     {
         S7Client.ConnectServer();
     }
+
+    /*[Route("connect")]
+    [HttpGet]
+    public ActionResult Connect()
+    {
+        if (S7Client.ConnectServer().IsSuccess)
+        {
+            return 
+        }
+    }*/
     
     [Route("start")]
     [HttpPost]
-    public ActionResult Start(StartParameter parameter)
+    public ActionResult Start(PlcParameter parameter)
     {
+        S7Client.Write("DB4.DBD8", parameter.speed_x);
+        S7Client.Write("DB4.DBD12", parameter.speed_z);
+        S7Client.Write("DB4.DBD16", parameter.speed_conveyor);
+        S7Client.Write("DB4.DBD20", parameter.speed_stepper);
         if (!S7Client.ReadBool("DB4.DBX6.2").Content)
         {
             S7Client.Write("DB4.DBX4.2", true); // 开始复位
@@ -30,8 +44,9 @@ public class PlcController:ControllerBase
         if (!S7Client.ReadBool("DB4.DBX4.0").Content)
         {
             S7Client.Write("DB4.DBX4.0", true); // 开始运行 
+            Thread.Sleep(1000);
+            S7Client.Write("DB4.DBX4.0", false); // 开始信号是脉冲信号，持续一段时间后停止
         }
-
         return Ok();
     }
     
@@ -70,7 +85,10 @@ public class PlcState
     public float[] weights { get; set; }
 }
 
-public class StartParameter
+public class PlcParameter
 {
-    public float a, b, c, d;
+    public float speed_x { get; set; }
+    public float speed_z { get; set; }
+    public float speed_conveyor { get; set; }
+    public float speed_stepper { get; set; }
 }
