@@ -8,9 +8,10 @@ import Parameter from "./components/Parameter.vue";
 const router=createRouter({
     history:createWebHashHistory(),
     routes:[
-        {path:'/', component: Parameter},
         {path:'/device', component: Device},
         {path:'/signin', component:Signin},
+        {path:'/',component:Order},
+        {path:'/order/parameter',component:Parameter},
     ]
 })
 

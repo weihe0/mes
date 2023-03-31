@@ -6,7 +6,7 @@
         <router-link to="/device"><li>设备管理</li></router-link>
       </ul>
     </nav>
-    <slot></slot>
+      <slot></slot>
   </div>
 
 </template>
@@ -16,25 +16,15 @@
 
 <style scoped>
 div{
-  display: flex;
-  height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
 }
-nav{
-  display: block;
-  background-color: deepskyblue;
-  height: 100%;
-  flex: none;
-}
-ul{
-  list-style-type: none;
-  padding: 2em 2em;
-  margin: 0;
-}
-li{
-  margin: 1em 0;
-  width: 10em;
-  text-align: center;
-  color: white;
-  font-family: sans-serif;
+@media screen and (max-width: 50rem) {
+    div{
+        display: block;
+    }
+    nav{
+        display: none;
+    }
 }
 </style>
