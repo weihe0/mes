@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
+import {createPinia} from "pinia";
 import Order from "./components/Order.vue";
 import Device from "./components/Device.vue";
 import Signin from "./components/Signin.vue"
@@ -14,5 +15,5 @@ const router=createRouter({
         {path:'/order/parameter',component:Parameter},
     ]
 })
-
-createApp(App).use(router).mount('#app');
+const pinia=createPinia();
+createApp(App).use(pinia).use(router).mount('#app');

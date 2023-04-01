@@ -11,7 +11,7 @@
                 <td>动作</td>
             </tr></thead>
             <tbody>
-            <tr v-for="(o,i) of order_list_ref" :key="o.id">
+            <tr v-for="(o,i) of orderListRef" :key="o.id">
                 <td>{{o.id}}</td>
                 <td>{{o.dosage}}</td>
                 <td>{{o.color}}</td>
@@ -23,7 +23,8 @@
             </tr>
             </tbody>
         </table>
-        <router-link to="parameter"><button>添加</button></router-link>
+        <button id="add"  @click="add">添加</button>
+        <Parameter/>
     </main>
 </Layout>
 </template>
@@ -32,39 +33,30 @@
 
 import Layout from "./Layout.vue";
 import "css.gg/icons/all.css"
-import {ref} from "vue";
-type OrderType={
-    id:number,
-    dosage:number,
-    color:string,
-    production:number,
-    position:number,
-};
-const order_list_ref=ref<OrderType[]>([]);
-const length=5;
-const random_array= new Uint8Array(length * 4);
-crypto.getRandomValues(random_array);
-for(let i=0;i<5;i++){
-    let o:OrderType={
-      id:random_array[4*i],
-        color:"红色",
-        dosage:random_array[4*i+1],
-        production:random_array[4*i+2],
-        position:random_array[4*i+3]%4+1,
-    };
-    order_list_ref.value.push(o);
-}
+import {reactive, ref} from "vue";
+import {defineStore} from "pinia";
+import {useStore, OrderType} from "../store";
+import Parameter from "./Parameter.vue";
+
+const orderListRef=ref<OrderType[]>([]);
+
 function prioritize(i:number){
-    let order_list=order_list_ref.value;
-    if(i>=0&&i<order_list.length){
-        order_list.unshift(order_list.splice(i,1)[0]);
+    let orderList=orderListRef.value;
+    if(i>=0&&i<orderList.length){
+        orderList.unshift(orderList.splice(i,1)[0]);
     }
 }
 function remove(i:number){
-    let order_list=order_list_ref.value;
-    if(i>=0&&i<order_list.length){
-        order_list.splice(i,1);
+    let orderList=orderListRef.value;
+    if(i>=0&&i<orderList.length){
+        orderList.splice(i,1);
     }
+}
+
+function add(){
+    const store=useStore();
+    store.newOrder.id=store.nextId++;
+    orderListRef.value.push({ ... store.newOrder});
 }
 </script>
 
@@ -90,5 +82,10 @@ tbody tr{
 }
 tbody:last-child{
     border-bottom: solid black 1px;
+}
+#add{
+    margin: 1em;
+    width: 20em;
+    height: 3em;
 }
 </style>
